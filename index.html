@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>マリメ お題メーカー</title>
+
+<style>
+body {
+  font-family: sans-serif;
+  text-align: center;
+  background: #f5f5f5;
+  padding: 30px 15px;
+}
+
+h1 {
+  font-size: 30px;
+}
+
+#result {
+  background: white;
+  max-width: 500px;
+  margin: 25px auto;
+  padding: 25px;
+  border-radius: 20px;
+  font-size: 22px;
+  line-height: 2;
+  box-shadow: 0 4px 15px #bbb;
+}
+
+button {
+  font-size: 24px;
+  font-weight: bold;
+  padding: 18px 30px;
+  border: 0;
+  border-radius: 20px;
+  cursor: pointer;
+}
+</style>
+</head>
+
+<body>
+
+<h1>🎮 マリメ お題メーカー</h1>
+
+<p>ボタンを押してコースのお題を決めよう！</p>
+
+<div id="result">
+🎲 ボタンを押してね！
+</div>
+
+<button onclick="makeOdai()">🎲 お題をつくる！</button>
+
+<script>
+function random(list) {
+  return list[Math.floor(Math.random() * list.length)];
+}
+
+function makeOdai() {
+
+  const places = [
+    "地上",
+    "地下",
+    "砂漠",
+    "雪",
+    "森",
+    "空",
+    "お化け屋敷",
+    "城"
+  ];
+
+  const challenges = [
+    "ジャンプを少なくしてクリア",
+    "コインをたくさん置く",
+    "ボス戦を作る",
+    "迷路を作る",
+    "スピードコースを作る",
+    "敵を少なくして難しくする",
+    "隠し道を作る",
+    "ゴール直前に仕掛けを作る"
+  ];
+
+  const times = [
+    "50秒",
+    "100秒",
+    "200秒",
+    "300秒"
+  ];
+
+  document.getElementById("result").innerHTML =
+    "🌍 テーマ：<b>" + random(places) + "</b><br>" +
+    "🎯 お題：<b>" + random(challenges) + "</b><br>" +
+    "⏱️ 制限時間：<b>" + random(times) + "</b>";
+}
+</script>
+
+</body>
+</html>
