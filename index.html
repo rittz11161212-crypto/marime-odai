@@ -1,0 +1,768 @@
+<!DOCTYPE html>  <html lang="ja">  
+<head>  
+<meta charset="UTF-8">  
+<meta name="viewport" content="width=device-width, initial-scale=1.0">  <title>マリオメーカー2 お題ガチャ</title>  <style>  
+* {  
+  box-sizing: border-box;  
+}  
+  
+body {  
+  margin: 0;  
+  padding: 20px 12px 40px;  
+  font-family: sans-serif;  
+  text-align: center;  
+  background: #f3f3f3;  
+  overflow-x: hidden;  
+}  
+  
+h1 {  
+  font-size: 28px;  
+  margin: 10px 0 8px;  
+}  
+  
+.subtitle {  
+  font-size: 16px;  
+  margin-bottom: 18px;  
+}  
+  
+/* 結果 */  
+#resultBox {  
+  display: none;  
+  max-width: 520px;  
+  margin: 10px auto 18px;  
+}  
+  
+#result {  
+  background: white;  
+  padding: 22px;  
+  border-radius: 20px;  
+  font-size: 20px;  
+  line-height: 1.7;  
+  box-shadow: 0 4px 15px #bbb;  
+}  
+  
+#result.goldResult {  
+  border: 5px solid #ffd700;  
+  box-shadow:  
+    0 0 15px #ffd700,  
+    0 0 35px rgba(255,215,0,0.6);  
+  animation: rareResult 0.6s ease-out;  
+}  
+  
+@keyframes rareResult {  
+  0% {  
+    transform: scale(0.6);  
+    opacity: 0;  
+  }  
+  
+  60% {  
+    transform: scale(1.08);  
+  }  
+  
+  100% {  
+    transform: scale(1);  
+    opacity: 1;  
+  }  
+}  
+  
+.rank {  
+  font-size: 27px;  
+  font-weight: bold;  
+}  
+  
+/* ボタン */  
+#drawButton,  
+#againButton {  
+  font-size: 22px;  
+  font-weight: bold;  
+  padding: 16px 28px;  
+  border: none;  
+  border-radius: 16px;  
+  background: #222;  
+  color: white;  
+  cursor: pointer;  
+}  
+  
+#againButton {  
+  display: block;  
+  margin: 15px auto 0;  
+}  
+  
+/* ガチャエリア */  
+#gachaArea {  
+  position: relative;  
+  height: 310px;  
+  max-width: 550px;  
+  margin: 5px auto;  
+  overflow: hidden;  
+}  
+  
+/* カプセル全体 */  
+#capsule {  
+  display: none;  
+  position: absolute;  
+  width: 130px;  
+  height: 130px;  
+  left: 50%;  
+  top: -160px;  
+  transform: translateX(-50%);  
+}  
+  
+/* 上半分・下半分 */  
+.half {  
+  position: absolute;  
+  left: 0;  
+  width: 130px;  
+  height: 65px;  
+  border: 5px solid #aaa;  
+  background: white;  
+}  
+  
+.topHalf {  
+  top: 0;  
+  border-radius: 70px 70px 8px 8px;  
+  border-bottom: 4px solid #888;  
+}  
+  
+.bottomHalf {  
+  bottom: 0;  
+  border-radius: 8px 8px 70px 70px;  
+  border-top: 4px solid #888;  
+  background: #f1f1f1;  
+}  
+  
+/* 中央の留め具 */  
+.lock {  
+  position: absolute;  
+  z-index: 5;  
+  width: 30px;  
+  height: 18px;  
+  left: 50%;  
+  top: 50%;  
+  transform: translate(-50%, -50%);  
+  border-radius: 10px;  
+  background: #aaa;  
+  border: 3px solid #777;  
+}  
+  
+/* 金カプセル */  
+.gold .topHalf,  
+.gold .bottomHalf {  
+  border-color: #a97900;  
+  background: linear-gradient(  
+    135deg,  
+    #fff7a8,  
+    #ffd700,  
+    #fff4a0,  
+    #d99b00,  
+    #fff5ad,  
+    #ffd700  
+  );  
+  box-shadow: 0 0 18px #ffd700;  
+}  
+  
+.gold .lock {  
+  background: #ffd700;  
+  border-color: #9c7000;  
+  box-shadow: 0 0 12px #ffd700;  
+}  
+  
+/* 落下 */  
+.fall {  
+  animation: fall 0.7s ease-in forwards;  
+}  
+  
+@keyframes fall {  
+  0% {  
+    top: -160px;  
+  }  
+  
+  75% {  
+    top: 165px;  
+  }  
+  
+  88% {  
+    top: 140px;  
+  }  
+  
+  100% {  
+    top: 155px;  
+  }  
+}  
+  
+/* 揺れる */  
+.shake {  
+  top: 155px;  
+  animation: shake 0.55s linear;  
+}  
+  
+@keyframes shake {  
+  0% {  
+    transform: translateX(-50%) rotate(0deg);  
+  }  
+  
+  15% {  
+    transform: translateX(-50%) rotate(-7deg);  
+  }  
+  
+  30% {  
+    transform: translateX(-50%) rotate(7deg);  
+  }  
+  
+  45% {  
+    transform: translateX(-50%) rotate(-6deg);  
+  }  
+  
+  60% {  
+    transform: translateX(-50%) rotate(6deg);  
+  }  
+  
+  75% {  
+    transform: translateX(-50%) rotate(-3deg);  
+  }  
+  
+  100% {  
+    transform: translateX(-50%) rotate(0deg);  
+  }  
+}  
+  
+/* 上半分が上へ */  
+.openTop {  
+  animation: openTop 0.55s ease-out forwards;  
+}  
+  
+@keyframes openTop {  
+  0% {  
+    transform: translateY(0) rotate(0deg);  
+    opacity: 1;  
+  }  
+  
+  100% {  
+    transform: translateY(-90px) rotate(-25deg);  
+    opacity: 0;  
+  }  
+}  
+  
+/* 下半分が下へ */  
+.openBottom {  
+  animation: openBottom 0.55s ease-out forwards;  
+}  
+  
+@keyframes openBottom {  
+  0% {  
+    transform: translateY(0) rotate(0deg);  
+    opacity: 1;  
+  }  
+  
+  100% {  
+    transform: translateY(90px) rotate(20deg);  
+    opacity: 0;  
+  }  
+}  
+  
+.openLock {  
+  animation: lockOpen 0.25s forwards;  
+}  
+  
+@keyframes lockOpen {  
+  to {  
+    transform: translate(-50%, -50%) scale(1.7);  
+    opacity: 0;  
+  }  
+}  
+  
+/* 激レア文字 */  
+#rareNotice {  
+  display: none;  
+  position: absolute;  
+  top: 35px;  
+  width: 100%;  
+  font-size: 30px;  
+  font-weight: bold;  
+  color: #b8860b;  
+  animation: sparkle 0.3s infinite alternate;  
+}  
+  
+@keyframes sparkle {  
+  from {  
+    transform: scale(1);  
+  }  
+  
+  to {  
+    transform: scale(1.1);  
+  }  
+}  
+  
+/* スキップ */  
+#skipButton {  
+  display: none;  
+  margin: 0 auto 15px;  
+  padding: 12px 25px;  
+  border: 2px solid #555;  
+  border-radius: 20px;  
+  background: white;  
+  font-size: 17px;  
+  font-weight: bold;  
+}  
+  
+.small {  
+  margin-top: 25px;  
+  font-size: 13px;  
+}  
+</style>  </head>  <body>  <h1>🎮 マリオメーカー2 お題ガチャ</h1>  <!-- 結果と「もう一回」をセット -->  <div id="resultBox">    <div id="result"></div>    <button id="againButton">  
+    🎲 もう一回引く！  
+  </button>  </div>  <div class="subtitle">  
+ガチャを引いてコースのお題を決めよう！<br>  
+✨ 金カプセルが出たら激レア！ ✨  
+</div>  <button id="drawButton">  
+🎲 ガチャを引く！  
+</button>  <div id="gachaArea">    <div id="rareNotice">  
+    ✨ 激レア！ ✨  
+  </div>    <div id="capsule">  <div id="topHalf" class="half topHalf"></div>  
+
+<div id="bottomHalf" class="half bottomHalf"></div>  
+
+<div id="lock" class="lock"></div>
+
+  </div>  </div>  <button id="skipButton">  
+⏩ スキップ  
+</button>  <div class="small">  
+※非公式のファン向けお題ジェネレーターです。  
+</div>  <script>  
+  
+const styles = [  
+  "スーパーマリオブラザーズ",  
+  "スーパーマリオブラザーズ3",  
+  "スーパーマリオワールド",  
+  "New スーパーマリオブラザーズ U",  
+  "スーパーマリオ 3Dワールド"  
+];  
+  
+const themes = [  
+  "地上",  
+  "地下",  
+  "水中",  
+  "砂漠",  
+  "雪原",  
+  "空",  
+  "森",  
+  "お化け屋敷",  
+  "飛行船",  
+  "城"  
+];  
+  
+const normalChallenges = [  
+  "コインをたくさん使ったコース",  
+  "ジャンプを楽しめるコース",  
+  "敵をうまく避けて進むコース",  
+  "土管をたくさん使ったコース",  
+  "隠し道があるコース",  
+  "初心者でも遊べるコース",  
+  "ゴール前にちょっとした罠があるコース",  
+  "パワーアップアイテムを活用するコース",  
+  "動く足場を使ったコース",  
+  "スピード感のあるコース",  
+  "敵を10体以上使ったコース",  
+  "コインを50枚以上配置したコース",  
+  "上下に大きく移動するコース",  
+  "最後にボスが待っているコース"  
+];  
+  
+const hardChallenges = [  
+  "敵をできるだけ倒さずにクリアできるコース",  
+  "コインを取らないように進むコース",  
+  "パワーアップなしでもクリアできるコース",  
+  "ジャンプのタイミングが重要なコース",  
+  "最後にボス戦があるコース",  
+  "時間ギリギリを狙うコース",  
+  "落下しそうで落下しないコース",  
+  "フェイクルートを入れたコース",  
+  "敵を利用しないと先へ進めないコース"  
+];  
+  
+const rareChallenges = [  
+  "👑 ヨッシーを最後まで連れてゴールできるコース",  
+  "🔥 3Dワールド限定の超スピードコース",  
+  "👑 スタートからゴールが見えるのに簡単には行けないコース",  
+  "🔥 ボスを3体以上登場させるコース",  
+  "👑 1画面を中心に仕掛けを作るコース",  
+  "🔥 一本道なのに超難しいコース",  
+  "👑 初見では仕掛けが分からない謎解きコース",  
+  "🔥 アクションと謎解きを両方入れたコース",  
+  "👑 ヨッシーを使わないとクリアできないコース",  
+  "🔥 3Dワールドでネコマリオを活用するコース"  
+];  
+  
+const times = [  
+  100,120,150,180,200,250,300,400,500  
+];  
+  
+const capsule = document.getElementById("capsule");  
+const topHalf = document.getElementById("topHalf");  
+const bottomHalf = document.getElementById("bottomHalf");  
+const lock = document.getElementById("lock");  
+  
+const resultBox = document.getElementById("resultBox");  
+const result = document.getElementById("result");  
+  
+const drawButton = document.getElementById("drawButton");  
+const againButton = document.getElementById("againButton");  
+const skipButton = document.getElementById("skipButton");  
+const rareNotice = document.getElementById("rareNotice");  
+  
+let currentResult;  
+let timers = [];  
+let finished = false;  
+  
+  
+/* ランダム */  
+function random(array) {  
+  return array[Math.floor(Math.random() * array.length)];  
+}  
+  
+  
+/* タイマー解除 */  
+function clearTimers() {  
+  
+  timers.forEach(function(timer) {  
+    clearTimeout(timer);  
+  });  
+  
+  timers = [];  
+}  
+  
+  
+/*  
+========================  
+「パカン！」の音  
+========================  
+*/  
+  
+function playOpenSound() {  
+  
+  try {  
+  
+    const AudioContext =  
+      window.AudioContext || window.webkitAudioContext;  
+  
+    const ctx = new AudioContext();  
+  
+    const osc = ctx.createOscillator();  
+    const gain = ctx.createGain();  
+  
+    osc.connect(gain);  
+    gain.connect(ctx.destination);  
+  
+    osc.type = "square";  
+  
+    osc.frequency.setValueAtTime(240, ctx.currentTime);  
+    osc.frequency.exponentialRampToValueAtTime(  
+      650,  
+      ctx.currentTime + 0.08  
+    );  
+  
+    gain.gain.setValueAtTime(0.18, ctx.currentTime);  
+  
+    gain.gain.exponentialRampToValueAtTime(  
+      0.001,  
+      ctx.currentTime + 0.15  
+    );  
+  
+    osc.start();  
+    osc.stop(ctx.currentTime + 0.15);  
+  
+  } catch(e) {}  
+  
+}  
+  
+  
+/*  
+========================  
+激レア「ピカーン✨」  
+========================  
+*/  
+  
+function playRareSound() {  
+  
+  try {  
+  
+    const AudioContext =  
+      window.AudioContext || window.webkitAudioContext;  
+  
+    const ctx = new AudioContext();  
+  
+    const notes = [700, 950, 1250, 1600];  
+  
+    notes.forEach(function(freq, index) {  
+  
+      const osc = ctx.createOscillator();  
+      const gain = ctx.createGain();  
+  
+      osc.connect(gain);  
+      gain.connect(ctx.destination);  
+  
+      osc.type = "sine";  
+  
+      const start =  
+        ctx.currentTime + (index * 0.07);  
+  
+      osc.frequency.setValueAtTime(freq, start);  
+  
+      gain.gain.setValueAtTime(0.001, start);  
+  
+      gain.gain.linearRampToValueAtTime(  
+        0.18,  
+        start + 0.02  
+      );  
+  
+      gain.gain.exponentialRampToValueAtTime(  
+        0.001,  
+        start + 0.5  
+      );  
+  
+      osc.start(start);  
+      osc.stop(start + 0.5);  
+  
+    });  
+  
+  } catch(e) {}  
+  
+}  
+  
+  
+/* お題を決める */  
+function createResult() {  
+  
+  const roll = Math.random();  
+  
+  let type;  
+  let rank;  
+  let challenge;  
+  
+  /* 5％ */  
+  if (roll < 0.05) {  
+  
+    type = "rare";  
+    rank = "🌟 激レアお題 🌟";  
+    challenge = random(rareChallenges);  
+  
+  }  
+  
+  /* 25％ */  
+  else if (roll < 0.30) {  
+  
+    type = "hard";  
+    rank = "🔥 むずかしいお題 🔥";  
+    challenge = random(hardChallenges);  
+  
+  }  
+  
+  /* 70％ */  
+  else {  
+  
+    type = "normal";  
+    rank = "⚪ ノーマルお題";  
+    challenge = random(normalChallenges);  
+  
+  }  
+  
+  return {  
+    type: type,  
+    rank: rank,  
+    style: random(styles),  
+    theme: random(themes),  
+    time: random(times),  
+    challenge: challenge  
+  };  
+}  
+  
+  
+/* ガチャ開始 */  
+function startGacha() {  
+  
+  clearTimers();  
+  
+  finished = false;  
+  
+  currentResult = createResult();  
+  
+  resultBox.style.display = "none";  
+  drawButton.style.display = "none";  
+  
+  rareNotice.style.display = "none";  
+  skipButton.style.display = "block";  
+  
+  /* カプセルを元に戻す */  
+  capsule.style.display = "block";  
+  capsule.style.top = "";  
+  
+  capsule.className = "";  
+  
+  topHalf.className = "half topHalf";  
+  bottomHalf.className = "half bottomHalf";  
+  lock.className = "lock";  
+  
+  /* 激レアなら金 */  
+  if (currentResult.type === "rare") {  
+    capsule.classList.add("gold");  
+  }  
+  
+  /* 落下開始 */  
+  capsule.classList.add("fall");  
+  
+  
+  /* 0.7秒で着地 */  
+  timers.push(setTimeout(function() {  
+  
+    if (finished) return;  
+  
+    capsule.classList.remove("fall");  
+  
+    capsule.style.top = "155px";  
+  
+  }, 700));  
+  
+  
+  /*  
+  着地後1秒間そのまま停止  
+  */  
+  
+  timers.push(setTimeout(function() {  
+  
+    if (finished) return;  
+  
+    capsule.style.top = "";  
+  
+    if (currentResult.type === "rare") {  
+  
+      capsule.className = "gold shake";  
+  
+    } else {  
+  
+      capsule.className = "shake";  
+  
+    }  
+  
+  }, 1700));  
+  
+  
+  /*  
+  揺れたあと「パカン！」  
+  */  
+  
+  timers.push(setTimeout(function() {  
+  
+    if (finished) return;  
+  
+    playOpenSound();  
+  
+    topHalf.classList.add("openTop");  
+    bottomHalf.classList.add("openBottom");  
+    lock.classList.add("openLock");  
+  
+  }, 2300));  
+  
+  
+  /*  
+  開いたあと結果  
+  */  
+  
+  timers.push(setTimeout(function() {  
+  
+    showResult(false);  
+  
+  }, 2800));  
+  
+}  
+  
+  
+/* 結果表示 */  
+function showResult(skipped) {  
+  
+  if (finished) return;  
+  
+  finished = true;  
+  
+  clearTimers();  
+  
+  capsule.style.display = "none";  
+  rareNotice.style.display = "none";  
+  skipButton.style.display = "none";  
+  
+  result.innerHTML =  
+    '<div class="rank">' +  
+    currentResult.rank +  
+    '</div>' +  
+  
+    '<br>' +  
+  
+    '🎨 <b>ゲームスキン</b><br>' +  
+    currentResult.style +  
+  
+    '<br><br>' +  
+  
+    '🌍 <b>シーン</b><br>' +  
+    currentResult.theme +  
+  
+    '<br><br>' +  
+  
+    '⏱️ <b>制限時間</b><br>' +  
+    currentResult.time +  
+    '秒' +  
+  
+    '<br><br>' +  
+  
+    '🎯 <b>チャレンジ</b><br>' +  
+    currentResult.challenge;  
+  
+  
+  /* 激レア */  
+  if (currentResult.type === "rare") {  
+  
+    result.className = "goldResult";  
+  
+    rareNotice.style.display = "block";  
+  
+    /* お題が見えた瞬間ピカーン */  
+    playRareSound();  
+  
+  } else {  
+  
+    result.className = "";  
+  
+  }  
+  
+  resultBox.style.display = "block";  
+  
+  window.scrollTo({  
+    top: 0,  
+    behavior: "smooth"  
+  });  
+  
+}  
+  
+  
+/* 最初のガチャ */  
+drawButton.addEventListener(  
+  "click",  
+  startGacha  
+);  
+  
+  
+/* もう一回 */  
+againButton.addEventListener(  
+  "click",  
+  startGacha  
+);  
+  
+  
+/* スキップ */  
+skipButton.addEventListener(  
+  "click",  
+  function() {  
+    showResult(true);  
+  }  
+);  
+  
+</script>  </body>  
+</html>
